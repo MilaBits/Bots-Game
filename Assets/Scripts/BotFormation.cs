@@ -18,28 +18,25 @@ namespace Bots
 
         public abstract List<Vector3> GetPositions(int botCount);
 
-        public abstract void AttackStart();
-        public abstract void AttackEnd();
+        public virtual void AttackStart() { }
+        public virtual void AttackEnd() { }
+
+        public virtual void Activate() { }
+        public virtual void Deactivate() { }
     }
 
     public class CircleBotFormation : BotFormation
     {
-        private Coroutine _aimCoroutine;
         private Coroutine _throwCoroutine;
-        private bool _aiming;
-        private bool _throwing;
-        private GameObject _targeter;
         private float throwSpeed = 1f;
         private float throwHeight = 2f;
         private AnimationCurve _throwCurve;
 
         public CircleBotFormation(BotsController botsController) : base(botsController)
         {
-            _targeter = GameObject.Instantiate(Resources.Load<GameObject>("Target"));
             _throwCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(.5f, throwHeight), new Keyframe(1, 0));
             _throwCurve.keys[0].weightedMode = WeightedMode.None;
             _throwCurve.keys[2].weightedMode = WeightedMode.None;
-            _targeter.SetActive(false);
         }
 
         public override List<Vector3> GetPositions(int botCount)
@@ -83,32 +80,16 @@ namespace Bots
 
         public override void AttackStart()
         {
-            _aimCoroutine = _botsController.StartCoroutine(Aim());
+            _botsController.aiming = true;
         }
 
         public override void AttackEnd()
         {
-            _targeter.SetActive(false);
+            _botsController.aiming = false;
+            if (!_botsController.BotsReady()) return;
 
             if (_botsController.bots.Count < 1) return;
-            _botsController.StartCoroutine(Throw(_targeter.transform.position));
-        }
-
-        IEnumerator Aim()
-        {
-            _targeter.SetActive(true);
-            while (_targeter.activeSelf)
-            {
-                var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-
-                if (Physics.Raycast(ray, out RaycastHit hit))
-                {
-                    _targeter.transform.position = hit.point;
-                    _targeter.transform.up = hit.normal;
-                }
-
-                yield return null;
-            }
+            _botsController.StartCoroutine(Throw(_botsController.Target.point));
         }
 
         private IEnumerator Throw(Vector3 target)
@@ -176,6 +157,7 @@ namespace Bots
 
         public override void AttackStart()
         {
+            if (!_botsController.BotsReady()) return;
             foreach (Bot bot in _botsController.bots)
             {
                 bot.transform.SetParent(_spinPivot);
@@ -188,6 +170,8 @@ namespace Bots
 
         public override void AttackEnd()
         {
+            base.AttackEnd();
+
             _botsController.StopCoroutine(_spinCoroutine);
             foreach (Bot bot in _botsController.bots)
             {
@@ -225,6 +209,8 @@ namespace Bots
 
         public override void AttackStart()
         {
+            if (!_botsController.BotsReady()) return;
+
             foreach (Bot bot in _botsController.bots)
             {
                 bot.transform.SetParent(_flipPivot);
@@ -234,8 +220,6 @@ namespace Bots
 
             _flipCoroutine = _botsController.StartCoroutine(Flip());
         }
-
-        public override void AttackEnd() { }
 
         public IEnumerator Flip()
         {

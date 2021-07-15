@@ -68,6 +68,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8a99517ca124f49b41e65edc3c870ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  readyMaterial: {fileID: 2100000, guid: e04d446a5ca0f5340b6a777e6d4445a9, type: 2}
+  movingMaterial: {fileID: 2100000, guid: 42274593ab800e947961b46627720276, type: 2}
 --- !u!1 &2065436075001642563
 GameObject:
   m_ObjectHideFlags: 0

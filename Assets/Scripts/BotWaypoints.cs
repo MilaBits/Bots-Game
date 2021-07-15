@@ -19,8 +19,14 @@ namespace Bots
 
         public void NextFormation()
         {
-            if (activeFormation != null) _formations.Enqueue(activeFormation);
+            if (activeFormation != null)
+            {
+                activeFormation.Deactivate();
+                _formations.Enqueue(activeFormation);
+            }
+
             activeFormation = _formations.Dequeue();
+            activeFormation.Activate();
         }
 
         // private void OnDrawGizmos()
