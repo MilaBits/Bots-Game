@@ -190,7 +190,8 @@ namespace Bots
         public FollowBotFormation(BotsController botsController) : base(botsController)
         {
             _flipPivot = new GameObject("flipPivot").transform;
-            _flipPivot.SetParent(botsController.transform);
+            _flipPivot.SetParent(botsController.transform, false);
+            _flipPivot.localRotation = Quaternion.identity;
             _flipPivot.localPosition = Vector3.zero;
         }
 
