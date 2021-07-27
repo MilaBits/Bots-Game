@@ -1,4 +1,3 @@
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Bots
@@ -21,7 +20,7 @@ namespace Bots
             Cursor.visible = false;
             transform.SetParent(verticalPivot.transform);
             transform.localPosition = offset;
-            transform.localRotation = quaternion.identity;
+            transform.localRotation = Quaternion.identity;
         }
 
         void Update()

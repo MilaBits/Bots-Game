@@ -970,6 +970,14 @@ PrefabInstance:
       propertyPath: minY
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1212726059, guid: 137cf1cf8c454f344a452749adb19371, type: 3}
+      propertyPath: sensitivityX
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 1212726059, guid: 137cf1cf8c454f344a452749adb19371, type: 3}
+      propertyPath: sensitivityY
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 295091176758292385, guid: 137cf1cf8c454f344a452749adb19371, type: 3}
       propertyPath: m_RootOrder
       value: 2

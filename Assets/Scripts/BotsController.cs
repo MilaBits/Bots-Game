@@ -64,7 +64,7 @@ namespace Bots
 
         public void InitializeBot()
         {
-            var bot = Instantiate(botPrefab, Vector3.zero, Quaternion.identity);
+            var bot = Instantiate(botPrefab, transform.position + -(transform.forward * 5), Quaternion.identity);
             AddBot(bot);
         }
 
