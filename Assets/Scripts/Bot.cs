@@ -5,26 +5,23 @@ namespace Bots
 {
     public class Bot : MonoBehaviour
     {
+        private MeshRenderer _meshRenderer;
+
         private NavMeshAgent _agent;
-        private int _id;
+        private bool follow = true;
 
-        private BotWaypoints _waypoints;
+        private bool wasReady;
 
-        private bool follow;
+        [SerializeField] private Material readyMaterial;
+        [SerializeField] private Material movingMaterial;
 
         private void Awake()
         {
+            _meshRenderer = GetComponentInChildren<MeshRenderer>();
             _agent = GetComponent<NavMeshAgent>();
             _agent.speed = 10f;
             _agent.angularSpeed = 1440f;
             _agent.acceleration = 60f;
-        }
-
-        public void SetWaypointTarget(BotWaypoints waypoints, int id)
-        {
-            _id = id;
-            _waypoints = waypoints;
-            follow = true;
         }
 
         public void SetTarget(Vector3 target)
@@ -32,7 +29,14 @@ namespace Bots
             if (_agent.enabled) _agent.destination = target;
         }
 
-        private void Update() { }
+        private void Update()
+        {
+            if (follow)
+            {
+                if (wasReady != IsReady()) _meshRenderer.material = IsReady() ? readyMaterial : movingMaterial;
+                wasReady = IsReady();
+            }
+        }
 
         public void ToggleAgent(bool value)
         {
