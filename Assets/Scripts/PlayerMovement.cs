@@ -8,6 +8,7 @@ namespace Bots
         [SerializeField] private float jumpVelocity = 5f;
         [SerializeField] private float fallMultiplier = 2.5f;
         [SerializeField] private float lowJumpMultiplier = 2f;
+        [SerializeField] private LayerMask groundMask;
 
         private CameraController _cameraController;
         private Rigidbody _rigidbody;
@@ -23,10 +24,17 @@ namespace Bots
             Vector3 move = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
             move *= moveSpeed * Time.deltaTime;
             transform.Translate(new Vector3(move.x, 0, move.y));
+            // _rigidbody.MovePosition(transform.position + transform.rotation * new Vector3(move.x, 0, move.y));
+            // _rigidbody.AddRelativeForce(new Vector3(move.x, 0, move.y), ForceMode.Acceleration);
 
-            if (Input.GetKeyDown(KeyCode.Space)) _rigidbody.velocity = Vector3.up * jumpVelocity;
+            if (Input.GetKeyDown(KeyCode.Space) && IsGrounded()) _rigidbody.velocity = Vector3.up * jumpVelocity;
 
             MakeJumpNice();
+        }
+
+        private bool IsGrounded()
+        {
+            return Physics.Raycast(transform.position + Vector3.up, Vector3.down, 1.1f, groundMask);
         }
 
         private void MakeJumpNice()

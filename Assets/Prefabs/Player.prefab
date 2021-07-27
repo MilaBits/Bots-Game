@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1196025897}
   - component: {fileID: 1196025900}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Overlay Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 1212726055}
   - component: {fileID: 1212726059}
   - component: {fileID: 6217299345016020879}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -140,7 +140,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 23
+    m_Bits: 151
   m_RenderingPath: 3
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -252,7 +252,7 @@ GameObject:
   - component: {fileID: 295091176758292386}
   - component: {fileID: 295091176758292387}
   - component: {fileID: 295091176758292380}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -292,6 +292,9 @@ MonoBehaviour:
   jumpVelocity: 7.5
   fallMultiplier: 2.5
   lowJumpMultiplier: 2
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!114 &295091176758292386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -333,7 +336,7 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 2
   m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!1 &295091177908235866
@@ -348,7 +351,7 @@ GameObject:
   - component: {fileID: 295091177908235861}
   - component: {fileID: 295091177908235860}
   - component: {fileID: 295091177908235867}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -441,7 +444,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 295091178324477756}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Camera Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
