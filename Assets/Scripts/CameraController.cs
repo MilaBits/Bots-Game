@@ -12,6 +12,9 @@ namespace Bots
         public Transform horizontalPivot;
         public Transform verticalPivot;
 
+        public float maxY = 60;
+        public float minY = 20;
+
         void Start()
         {
             Cursor.lockState = CursorLockMode.Locked;
@@ -24,7 +27,8 @@ namespace Bots
         void Update()
         {
             horizontalPivot.eulerAngles += new Vector3(0, Input.GetAxis("Mouse X") * sensitivityX * Time.deltaTime, 0);
-            verticalPivot.eulerAngles = verticalPivot.eulerAngles + new Vector3(Input.GetAxis("Mouse Y") * -sensitivityY * Time.deltaTime, 0, 0);
+            var newX = Mathf.Clamp(verticalPivot.eulerAngles.x + Input.GetAxis("Mouse Y") * -sensitivityY * Time.deltaTime, minY, maxY);
+            verticalPivot.eulerAngles = new Vector3(newX, verticalPivot.eulerAngles.y, verticalPivot.eulerAngles.z);
 
             transform.localPosition += new Vector3(0, 0, Input.GetAxis("Mouse ScrollWheel"));
         }
