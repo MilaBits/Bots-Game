@@ -7,8 +7,11 @@ namespace Bots
         [SerializeField] private float moveSpeed;
         [SerializeField] private float jumpVelocity = 5f;
         [SerializeField] private float fallMultiplier = 2.5f;
+        [SerializeField] private float slowFallMultiplier = 2.5f;
         [SerializeField] private float lowJumpMultiplier = 2f;
         [SerializeField] private LayerMask groundMask;
+
+        [SerializeField] private bool slowFall;
 
         private CameraController _cameraController;
         private Rigidbody _rigidbody;
@@ -32,7 +35,7 @@ namespace Bots
             MakeJumpNice();
         }
 
-        private bool IsGrounded()
+        public bool IsGrounded()
         {
             return Physics.Raycast(transform.position + Vector3.up, Vector3.down, 1.1f, groundMask);
         }
@@ -40,9 +43,16 @@ namespace Bots
         private void MakeJumpNice()
         {
             if (_rigidbody.velocity.y < 0)
-                _rigidbody.velocity += Vector3.up * (Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime);
+            {
+                var fallMult = slowFall ? slowFallMultiplier : fallMultiplier;
+                _rigidbody.velocity += Vector3.up * (Physics.gravity.y * (fallMult - 1) * Time.deltaTime);
+            }
             else if (_rigidbody.velocity.y > 0 && !Input.GetKey(KeyCode.Space))
+            {
                 _rigidbody.velocity += Vector3.up * (Physics.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime);
+            }
         }
+
+        public void ToggleSlowFall(bool value) => slowFall = value;
     }
 }

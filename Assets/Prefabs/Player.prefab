@@ -291,10 +291,12 @@ MonoBehaviour:
   moveSpeed: 6
   jumpVelocity: 7.5
   fallMultiplier: 2.5
+  slowFallMultiplier: 0.5
   lowJumpMultiplier: 2
   groundMask:
     serializedVersion: 2
     m_Bits: 1
+  slowFall: 0
 --- !u!114 &295091176758292386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -321,6 +323,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   botPrefab: {fileID: 8223462838427131076, guid: faa83483efedf4b4ba966be44a7aa590, type: 3}
+  PlayerMovement: {fileID: 0}
   aiming: 0
   targeterPrefab: {fileID: 3997560175958411095, guid: 230fc4ab69e87134693a58557d7eca8d, type: 3}
 --- !u!54 &295091176758292380

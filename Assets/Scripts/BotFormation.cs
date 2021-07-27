@@ -157,7 +157,7 @@ namespace Bots
 
         public override void AttackStart()
         {
-            if (!_botsController.BotsReady()) return;
+            if (!_botsController.BotsReady() || !_botsController.PlayerMovement.IsGrounded()) return;
             foreach (Bot bot in _botsController.bots)
             {
                 bot.transform.SetParent(_spinPivot);
@@ -165,6 +165,7 @@ namespace Bots
                 bot.transform.LookAt(_spinPivot.transform.position + _spinPivot.transform.position);
             }
 
+            _botsController.GetComponent<PlayerMovement>().ToggleSlowFall(true);
             _spinCoroutine = _botsController.StartCoroutine(Spin());
         }
 
@@ -178,6 +179,7 @@ namespace Bots
                 bot.transform.SetParent(null);
                 bot.ToggleAgent(true);
             }
+            _botsController.PlayerMovement.ToggleSlowFall(false);
         }
     }
 

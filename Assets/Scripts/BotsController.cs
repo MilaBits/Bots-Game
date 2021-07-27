@@ -8,6 +8,7 @@ namespace Bots
         public Queue<Bot> bots = new Queue<Bot>();
         public Bot botPrefab;
         private BotWaypoints _waypoints;
+        public PlayerMovement PlayerMovement;
 
         public bool aiming;
         private GameObject _targeter;
@@ -18,6 +19,7 @@ namespace Bots
         {
             _targeter = Instantiate(targeterPrefab);
             _waypoints = GetComponent<BotWaypoints>();
+            PlayerMovement = GetComponent<PlayerMovement>();
             _waypoints.SetFormations(new List<BotFormation> {new CircleBotFormation(this), new LineBotFormation(this), new FollowBotFormation(this)});
             _waypoints.NextFormation();
         }
