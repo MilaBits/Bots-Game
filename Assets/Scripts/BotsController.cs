@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Bots
 {
@@ -54,25 +55,54 @@ namespace Bots
         public bool BotsReady()
         {
             foreach (Bot bot in bots)
-            {
                 if (!bot.IsReady())
-                {
                     return false;
-                }
-            }
-
             return true;
         }
 
         public void InitializeBot()
         {
             var bot = Instantiate(botPrefab, transform.position + -(transform.forward * 5), Quaternion.identity);
+            bot.GetComponent<NavMeshAgent>().speed = PlayerMovement.moveSpeed;
             AddBot(bot);
+            // PlayerMovement.OnJumped.AddListener(delegate { BotLock(true); });
+            // PlayerMovement.OnLanded.AddListener(delegate { BotLock(false); });
         }
+
+        // private void BotLock(bool value)
+        // {
+        //     int index = 0;
+        //     var positions = _waypoints.activeFormation.GetPositions(bots.Count);
+        //     foreach (Bot bot in bots)
+        //     {
+        //         if (bot.IsReady())
+        //         {
+        //             bot.ToggleAgent(!value);
+        //             bot.SyncPos(value, positions[index]);
+        //         }
+        //
+        //         index++;
+        //     }
+        // }
+
+        // private void BotJump()
+        // {
+        //     int index = 0;
+        //     var positions = _waypoints.activeFormation.GetPositions(bots.Count);
+        //     foreach (Bot bot in bots)
+        //     {
+        //         if (bot.IsReady())
+        //         {
+        //             bot.ToggleAgent(false);
+        //             bot.SyncPos(true, positions[index]);
+        //         }
+        //
+        //         index++;
+        //     }
+        // }
 
         public void AddBot(Bot bot)
         {
-            // bot.SetWaypointTarget(_waypoints, _waypoints.botCount);
             bots.Enqueue(bot);
             _waypoints.botCount++;
         }
@@ -81,6 +111,24 @@ namespace Bots
         {
             _waypoints.botCount--;
             return bots.Dequeue();
+        }
+
+        public bool GetReadyBot(out Bot bot)
+        {
+            for (int i = 0; i < bots.Count; i++)
+            {
+                Bot currentBot = GetBot();
+                if (currentBot.IsReady())
+                {
+                    bot = currentBot;
+                    return true;
+                }
+
+                AddBot(currentBot);
+            }
+
+            bot = null;
+            return false;
         }
     }
 }

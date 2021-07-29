@@ -1,25 +1,20 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 namespace Bots
 {
     public class Bot : MonoBehaviour
     {
-        private MeshRenderer _meshRenderer;
-
         private NavMeshAgent _agent;
-        private bool follow = true;
-
-        private bool wasReady;
-
-        [SerializeField] private Material readyMaterial;
-        [SerializeField] private Material movingMaterial;
+        public float defaultMoveSpeed = 6f;
+        public UnityEvent<Bot, Collider> CollisionEntered = new UnityEvent<Bot, Collider>();
 
         private void Awake()
         {
-            _meshRenderer = GetComponentInChildren<MeshRenderer>();
             _agent = GetComponent<NavMeshAgent>();
-            _agent.speed = 10f;
+            _agent.stoppingDistance = .01f;
+            _agent.speed = defaultMoveSpeed;
             _agent.angularSpeed = 1440f;
             _agent.acceleration = 60f;
         }
@@ -31,22 +26,22 @@ namespace Bots
 
         private void Update()
         {
-            if (follow)
-            {
-                if (wasReady != IsReady()) _meshRenderer.material = IsReady() ? readyMaterial : movingMaterial;
-                wasReady = IsReady();
-            }
+            if (_agent.enabled) _agent.speed = defaultMoveSpeed + _agent.remainingDistance;
         }
 
         public void ToggleAgent(bool value)
         {
-            follow = value;
             _agent.enabled = value;
+            Debug.Log("test");
+            if (value && _agent.isOnNavMesh) transform.position = _agent.destination;
         }
 
         public bool IsReady()
         {
-            return _agent.remainingDistance < .01f;
+            if (_agent.enabled) return _agent.remainingDistance < .01f;
+            return true;
         }
+
+        private void OnTriggerEnter(Collider other) => CollisionEntered.Invoke(this, other);
     }
 }

@@ -1,10 +1,12 @@
+using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Bots
 {
     public class PlayerMovement : MonoBehaviour
     {
-        [SerializeField] private float moveSpeed;
+        public float moveSpeed;
         [SerializeField] private float jumpVelocity = 5f;
         [SerializeField] private float fallMultiplier = 2.5f;
         [SerializeField] private float slowFallMultiplier = 2.5f;
@@ -16,23 +18,68 @@ namespace Bots
         private CameraController _cameraController;
         private Rigidbody _rigidbody;
 
+        public UnityEvent OnJumped = new UnityEvent();
+        public bool jumping;
+        public UnityEvent OnLanded = new UnityEvent();
+
+        public bool OnProgressPath;
+        public ProgressPath progressPath;
+
+        private bool doJump;
+        private Vector3 move;
+
         private void Awake()
         {
             _cameraController = FindObjectOfType<CameraController>();
             _rigidbody = GetComponent<Rigidbody>();
         }
 
-        void Update()
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Space) && IsGrounded()) _rigidbody.velocity = Vector3.up * jumpVelocity;
+
+            if (OnProgressPath) ProgressPathMove();
+            else HorizontalMove();
+
+            MakeJumpNice();
+            if (IsGrounded() && _rigidbody.velocity.y > 0 && !jumping)
+            {
+                jumping = true;
+                OnJumped.Invoke();
+            }
+
+            if (IsGrounded() && _rigidbody.velocity.y < 0 && jumping)
+            {
+                jumping = false;
+                OnLanded.Invoke();
+            }
+        }
+
+        public void ToggleProgressPath(bool value)
+        {
+            OnProgressPath = value;
+            _rigidbody.useGravity = !value;
+        }
+
+        public void ToggleProgressPath(bool value, ProgressPath path)
+        {
+            progressPath = path;
+            ToggleProgressPath(value);
+        }
+
+        private void ProgressPathMove()
+        {
+            var verticalAxis = Input.GetAxis("Vertical");
+            progressPath.Move(verticalAxis * moveSpeed * Time.deltaTime);
+        }
+
+        private void HorizontalMove()
         {
             Vector3 move = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
             move *= moveSpeed * Time.deltaTime;
             transform.Translate(new Vector3(move.x, 0, move.y));
             // _rigidbody.MovePosition(transform.position + transform.rotation * new Vector3(move.x, 0, move.y));
             // _rigidbody.AddRelativeForce(new Vector3(move.x, 0, move.y), ForceMode.Acceleration);
-
-            if (Input.GetKeyDown(KeyCode.Space) && IsGrounded()) _rigidbody.velocity = Vector3.up * jumpVelocity;
-
-            MakeJumpNice();
         }
 
         public bool IsGrounded()

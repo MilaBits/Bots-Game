@@ -140,7 +140,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 151
+    m_Bits: 407
   m_RenderingPath: 3
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -297,6 +297,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   slowFall: 0
+  OnJumped:
+    m_PersistentCalls:
+      m_Calls: []
+  jumping: 0
+  OnLanded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnProgressPath: 0
 --- !u!114 &295091176758292386
 MonoBehaviour:
   m_ObjectHideFlags: 0
