@@ -9,7 +9,7 @@ namespace Bots
         public Queue<Bot> bots = new Queue<Bot>();
         public Bot botPrefab;
         private BotWaypoints _waypoints;
-        public PlayerMovement PlayerMovement;
+        public ThirdPersonMovement PlayerMovement;
 
         public bool aiming;
         private GameObject _targeter;
@@ -20,8 +20,9 @@ namespace Bots
         {
             _targeter = Instantiate(targeterPrefab);
             _waypoints = GetComponent<BotWaypoints>();
-            PlayerMovement = GetComponent<PlayerMovement>();
+            PlayerMovement = GetComponent<ThirdPersonMovement>();
             _waypoints.SetFormations(new List<BotFormation> {new CircleBotFormation(this), new LineBotFormation(this), new FollowBotFormation(this)});
+            _waypoints.OnFormationChanged.AddListener(UpdateBotTargets);
             _waypoints.NextFormation();
         }
 
@@ -30,14 +31,7 @@ namespace Bots
             if (Input.GetKeyDown(KeyCode.Q)) InitializeBot();
             if (Input.GetKeyDown(KeyCode.Mouse0)) _waypoints.activeFormation.AttackStart();
             if (Input.GetKeyUp(KeyCode.Mouse0)) _waypoints.activeFormation.AttackEnd();
-
-            var positions = _waypoints.activeFormation.GetPositions(bots.Count);
-            int index = 0;
-            foreach (Bot bot in bots)
-            {
-                bot.SetTarget(transform.position + transform.rotation * positions[index]);
-                index++;
-            }
+            if (PlayerMovement.inputDirection.magnitude >= float.Epsilon || PlayerMovement.lockRotationToCamera) UpdateBotTargets();
 
             _targeter.SetActive(aiming);
             if (aiming)
@@ -52,6 +46,17 @@ namespace Bots
             }
         }
 
+        public void UpdateBotTargets()
+        {
+            var positions = _waypoints.activeFormation.GetPositions(bots.Count);
+            int index = 0;
+            foreach (Bot bot in bots)
+            {
+                bot.SetTarget(transform.position + PlayerMovement.GameplayDirection() * positions[index]);
+                index++;
+            }
+        }
+
         public bool BotsReady()
         {
             foreach (Bot bot in bots)
@@ -63,54 +68,23 @@ namespace Bots
         public void InitializeBot()
         {
             var bot = Instantiate(botPrefab, transform.position + -(transform.forward * 5), Quaternion.identity);
-            bot.GetComponent<NavMeshAgent>().speed = PlayerMovement.moveSpeed;
+            bot.GetComponent<NavMeshAgent>().speed = PlayerMovement.speed;
             AddBot(bot);
-            // PlayerMovement.OnJumped.AddListener(delegate { BotLock(true); });
-            // PlayerMovement.OnLanded.AddListener(delegate { BotLock(false); });
         }
-
-        // private void BotLock(bool value)
-        // {
-        //     int index = 0;
-        //     var positions = _waypoints.activeFormation.GetPositions(bots.Count);
-        //     foreach (Bot bot in bots)
-        //     {
-        //         if (bot.IsReady())
-        //         {
-        //             bot.ToggleAgent(!value);
-        //             bot.SyncPos(value, positions[index]);
-        //         }
-        //
-        //         index++;
-        //     }
-        // }
-
-        // private void BotJump()
-        // {
-        //     int index = 0;
-        //     var positions = _waypoints.activeFormation.GetPositions(bots.Count);
-        //     foreach (Bot bot in bots)
-        //     {
-        //         if (bot.IsReady())
-        //         {
-        //             bot.ToggleAgent(false);
-        //             bot.SyncPos(true, positions[index]);
-        //         }
-        //
-        //         index++;
-        //     }
-        // }
 
         public void AddBot(Bot bot)
         {
             bots.Enqueue(bot);
             _waypoints.botCount++;
+            UpdateBotTargets();
         }
 
         public Bot GetBot()
         {
             _waypoints.botCount--;
-            return bots.Dequeue();
+            Bot bot = bots.Dequeue();
+            UpdateBotTargets();
+            return bot;
         }
 
         public bool GetReadyBot(out Bot bot)

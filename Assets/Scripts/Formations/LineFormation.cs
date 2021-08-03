@@ -50,15 +50,20 @@ public class LineBotFormation : BotFormation
 
     public override void AttackStart()
     {
-        if (!_botsController.BotsReady() || !_botsController.PlayerMovement.IsGrounded()) return;
+        if (!_botsController.BotsReady()) return;
+
+        int index = 0;
+        var positions = GetPositions(_botsController.bots.Count);
         foreach (Bot bot in _botsController.bots)
         {
             bot.transform.SetParent(_spinPivot);
             bot.ToggleAgent(false);
+            bot.transform.position = positions[index] + _botsController.transform.position;
             bot.transform.LookAt(_spinPivot.transform.position + _spinPivot.transform.position);
+            index++;
         }
 
-        _botsController.GetComponent<PlayerMovement>().ToggleSlowFall(true);
+        _botsController.PlayerMovement.ToggleSlowFall(true);
         _spinCoroutine = _botsController.StartCoroutine(Spin());
     }
 
@@ -66,7 +71,7 @@ public class LineBotFormation : BotFormation
     {
         base.AttackEnd();
 
-        _botsController.StopCoroutine(_spinCoroutine);
+        if (_spinCoroutine != null) _botsController.StopCoroutine(_spinCoroutine);
         foreach (Bot bot in _botsController.bots)
         {
             bot.transform.SetParent(null);

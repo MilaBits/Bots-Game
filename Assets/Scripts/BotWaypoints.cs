@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Bots
 {
@@ -9,6 +10,8 @@ namespace Bots
         public int botCount;
 
         private Queue<BotFormation> _formations = new Queue<BotFormation>();
+
+        public UnityEvent OnFormationChanged = new UnityEvent();
 
         public void SetFormations(List<BotFormation> formations) => _formations = new Queue<BotFormation>(formations);
 
@@ -27,17 +30,7 @@ namespace Bots
 
             activeFormation = _formations.Dequeue();
             activeFormation.Activate();
+            OnFormationChanged.Invoke();
         }
-
-        // private void OnDrawGizmos()
-        // {
-        //     Gizmos.color = Color.green;
-        //     foreach (var position in activeFormation.GetPositions(botCount))
-        //     {
-        //         Gizmos.DrawSphere(transform.position + position, .1f);
-        //     }
-        // }
-
-        // public Vector3 GetPosition(Bot bot) => transform.position + transform.rotation * activeFormation.GetPositions(botCount)[id];
     }
 }

@@ -36,12 +36,27 @@ namespace Bots
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space) && IsGrounded()) _rigidbody.velocity = Vector3.up * jumpVelocity;
+            if (Input.GetButtonDown("Jump"))
+            {
+                if (IsGrounded() || OnProgressPath)
+                {
+                    OnProgressPath = false;
+                    _rigidbody.velocity = Vector3.up * jumpVelocity;
+                }
+            }
 
-            if (OnProgressPath) ProgressPathMove();
-            else HorizontalMove();
+
+            if (OnProgressPath)
+            {
+                ProgressPathMove();
+                return;
+            }
+
+            // HorizontalMove();
+
 
             MakeJumpNice();
+
             if (IsGrounded() && _rigidbody.velocity.y > 0 && !jumping)
             {
                 jumping = true;
@@ -77,9 +92,7 @@ namespace Bots
         {
             Vector3 move = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
             move *= moveSpeed * Time.deltaTime;
-            transform.Translate(new Vector3(move.x, 0, move.y));
-            // _rigidbody.MovePosition(transform.position + transform.rotation * new Vector3(move.x, 0, move.y));
-            // _rigidbody.AddRelativeForce(new Vector3(move.x, 0, move.y), ForceMode.Acceleration);
+            _rigidbody.velocity = transform.rotation * new Vector3(move.x, _rigidbody.velocity.y, move.y);
         }
 
         public bool IsGrounded()

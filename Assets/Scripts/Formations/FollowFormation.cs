@@ -88,7 +88,6 @@ public class FollowBotFormation : BotFormation
 
     private void ReturnBotsToNormal()
     {
-        Debug.Log("Landed");
         _botsController.PlayerMovement.OnLanded.RemoveListener(ReturnBotsToNormal);
         foreach (Bot bot in _botsController.bots)
         {
@@ -100,7 +99,6 @@ public class FollowBotFormation : BotFormation
 
     private void GetOffBridge()
     {
-        Debug.Log("Reset");
         _botsController.PlayerMovement.OnJumped.RemoveListener(GetOffBridge);
         _botsController.PlayerMovement.ToggleProgressPath(false);
     }
