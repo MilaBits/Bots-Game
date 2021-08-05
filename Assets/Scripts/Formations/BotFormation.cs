@@ -22,11 +22,19 @@ namespace Bots
 
         public virtual void Activate() { }
         public virtual void Deactivate() { }
+
+
+        public void ResetBots()
+        {
+            int index = 0;
+            var positions = GetPositions(_botsController.bots.Count);
+            foreach (Bot bot in _botsController.bots)
+            {
+                bot.transform.SetParent(null);
+                bot.ToggleAgent(true);
+                bot.SetTarget(_botsController.transform.position + _botsController.transform.rotation * positions[index]);
+                index++;
+            }
+        }
     }
-
-    
-
-    
-
-    
 }

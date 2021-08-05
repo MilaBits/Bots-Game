@@ -37,7 +37,7 @@ public class LineBotFormation : BotFormation
 
     public IEnumerator Spin()
     {
-        Quaternion startRot = _spinPivot.rotation;
+        Quaternion startRot = Quaternion.identity;
         for (float passedTime = 0; passedTime < _spinSpeed; passedTime += Time.deltaTime)
         {
             _spinPivot.rotation = startRot * Quaternion.AngleAxis(passedTime / -_spinSpeed * 360f, Vector3.up);
@@ -72,11 +72,8 @@ public class LineBotFormation : BotFormation
         base.AttackEnd();
 
         if (_spinCoroutine != null) _botsController.StopCoroutine(_spinCoroutine);
-        foreach (Bot bot in _botsController.bots)
-        {
-            bot.transform.SetParent(null);
-            bot.ToggleAgent(true);
-        }
+
+        ResetBots();
 
         _botsController.PlayerMovement.ToggleSlowFall(false);
     }

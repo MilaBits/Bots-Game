@@ -49,12 +49,12 @@ public class FollowBotFormation : BotFormation
     {
         foreach (Bot bot in _botsController.bots) bot.CollisionEntered.AddListener(Hit);
 
-        Quaternion startRot = _flipPivot.rotation;
+        Quaternion startRot = Quaternion.identity;
         float timePassed = 0f;
         while (timePassed < _flipSpeed)
         {
             timePassed += Time.deltaTime;
-            _flipPivot.rotation = startRot * Quaternion.AngleAxis(timePassed / -_flipSpeed * -180f, Vector3.right);
+            _flipPivot.localRotation = startRot * Quaternion.AngleAxis(timePassed / _flipSpeed * 180f, Vector3.right);
 
             yield return null;
         }
@@ -62,9 +62,11 @@ public class FollowBotFormation : BotFormation
         foreach (Bot bot in _botsController.bots)
         {
             bot.CollisionEntered.RemoveListener(Hit);
-            bot.transform.SetParent(null);
-            bot.ToggleAgent(true);
         }
+
+        ResetBots();
+
+        _flipPivot.localRotation = startRot;
     }
 
     private void Hit(Bot hitBot, Collider other)
@@ -81,7 +83,6 @@ public class FollowBotFormation : BotFormation
             Vector3 firstBotPos = _botsController.bots.First().transform.position;
             Vector3 lastBotPos = _botsController.bots.Last().transform.position;
             _botsController.PlayerMovement.ToggleProgressPath(true, new ProgressPath(firstBotPos, lastBotPos, _botsController.transform));
-            _botsController.PlayerMovement.OnJumped.AddListener(GetOffBridge);
             _botsController.PlayerMovement.OnLanded.AddListener(ReturnBotsToNormal);
         }
     }
@@ -95,11 +96,5 @@ public class FollowBotFormation : BotFormation
             bot.transform.position = _botsController.transform.position;
             bot.ToggleAgent(true);
         }
-    }
-
-    private void GetOffBridge()
-    {
-        _botsController.PlayerMovement.OnJumped.RemoveListener(GetOffBridge);
-        _botsController.PlayerMovement.ToggleProgressPath(false);
     }
 }

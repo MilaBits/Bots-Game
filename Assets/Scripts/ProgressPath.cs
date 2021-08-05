@@ -23,7 +23,7 @@ public class ProgressPath
 
     public void Move(float progress)
     {
-        currentProgress += progress;
+        currentProgress = Mathf.Clamp(currentProgress + progress, 0, fullProgress);
         target.transform.position = Vector3.Lerp(start, end, currentProgress / fullProgress);
     }
 }

@@ -36,11 +36,13 @@ namespace Bots
         public Vector3 inputDirection { get; private set; }
         private Vector3 moveDir;
         private Rigidbody rb;
+        private Collider _collider;
         private Transform cam;
 
         private void Awake()
         {
             rb = GetComponent<Rigidbody>();
+            _collider = GetComponentInChildren<Collider>();
             cam = Camera.main.transform;
             Cursor.lockState = CursorLockMode.Confined;
         }
@@ -58,7 +60,11 @@ namespace Bots
                 // rb.velocity = Vector3.up * jumpVelocity;
                 // }
 
-                if (IsGrounded()) rb.velocity = Vector3.up * jumpVelocity;
+                if (IsGrounded())
+                {
+                    if (OnProgressPath) ToggleProgressPath(false);
+                    rb.velocity = Vector3.up * jumpVelocity;
+                }
             }
 
             if (!jumping && rb.velocity.y > 0 && IsGrounded())
@@ -82,10 +88,11 @@ namespace Bots
                 return;
             }
 
-            if (inputDirection.magnitude > float.Epsilon)
+            if (!OnProgressPath && inputDirection.magnitude > float.Epsilon)
             {
                 float targetAngle = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
                 float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothvelocity, turnSmoothTime);
+
                 transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
                 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
@@ -126,6 +133,7 @@ namespace Bots
         public void ToggleProgressPath(bool value)
         {
             OnProgressPath = value;
+            _collider.enabled = !value;
             rb.useGravity = !value;
         }
 
